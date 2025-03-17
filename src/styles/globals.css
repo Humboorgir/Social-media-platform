@@ -1,3 +1,38 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root,
+  .light {
+    --foreground: 215 28% 17%;
+    --foreground-light: 0 0% 25%;
+    --foreground-muted: 240 3.8% 46.1%;
+    --background: 0 0% 100%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4% 95%;
+    --accent: 240 4% 95%;
+    --ring: 240 3% 87%;
+
+    --skeleton-base: 0 0% 92%;
+    --skeleton-highlight: 0 0% 87%;
+  }
+  .dark {
+    --foreground: 0 0% 98%;
+    --foreground-light: 0 0% 83%;
+    --foreground-muted: 0 0% 64%;
+    --background: 0 0% 2%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 4% 18%;
+    --accent: 240 4% 15%;
+    --ring: 240 6% 23%;
+
+    --skeleton-base: 0 0% 13%;
+    --skeleton-highlight: 0 0% 27%;
+  }
+}

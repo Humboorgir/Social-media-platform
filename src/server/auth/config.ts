@@ -1,57 +1,82 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { type DefaultSession, type NextAuthConfig } from "next-auth";
+import {
+  CredentialsSignin,
+  type DefaultSession,
+  type NextAuthConfig,
+} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { signInSchema } from "~/lib/schema/sign-in-schema";
 
 import { db } from "~/server/db";
+import * as bcrypt from "bcrypt";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // ...other properties
-      // role: UserRole;
+      name: string;
+      email: string;
     } & DefaultSession["user"];
   }
+}
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+import { JWT } from "next-auth/jwt";
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+  }
+}
+
+class CustomError extends CredentialsSignin {
+  constructor(error: string) {
+    super();
+    this.code = error;
+  }
 }
 
 export const authConfig = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: "credentials",
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        email: { label: "Email", type: "text", placeholder: "jsmith" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        // Add logic here to look up the user from the credentials supplied
-        const user = { id: "1", name: "J Smith", email: "jsmith@example.com" };
+        const parsedCredentials = signInSchema.safeParse(credentials);
 
-        if (user) {
-          // Any object returned will be saved in `user` property of the JWT
-          return user;
-        } else {
-          // If you return null then an error will be displayed advising the user to check their details.
-          return null;
+        if (parsedCredentials.error)
+          throw new CustomError(parsedCredentials.error.issues[0]!.message);
+        const { email, password } = parsedCredentials.data;
 
-          // You can also Reject this callback with an Error thus the user
-          // will be sent to the error page with the error message as a query parameter
-        }
+        const user = await db.user.findFirst({
+          where: {
+            email,
+          },
+        });
+        if (!user) throw new CustomError("User not found");
+
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if (!isPasswordCorrect) throw new CustomError("Incorrect password");
+
+        return user;
       },
     }),
   ],
-  adapter: PrismaAdapter(db),
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session({ token, session }) {
+      if (token) {
+        session.user.id = token.id;
+      }
+
+      return session;
+    },
+    jwt({ token, user }) {
+      if (!user) return token;
+      return {
+        id: user.id as string,
+      };
+    },
   },
 } satisfies NextAuthConfig;

@@ -1,9 +1,11 @@
 import "~/styles/globals.css";
 
-import { GeistSans } from "geist/font/sans";
+import NextTopLoader from "nextjs-toploader";
+import { Roboto } from "next/font/google";
 import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import Toaster from "~/components/ui/toast";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -11,13 +13,21 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+const roboto = Roboto({ weight: ["400", "500", "700", "900"] });
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html lang="en" className={`${roboto.className}`}>
       <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <main className="grid min-h-screen grid-rows-[auto,1fr,auto]">
+          <header>test</header>
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+          <footer>test</footer>
+        </main>
+        <Toaster position="top-center" richColors />
+        <NextTopLoader color="black" />
       </body>
     </html>
   );

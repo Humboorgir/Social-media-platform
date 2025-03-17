@@ -1,6 +1,12 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 
-const useDebouncedRippleCleanUp = (rippleCount: number, duration: number, cleanUpFunction: () => void) => {
+const useDebouncedRippleCleanUp = (
+  rippleCount: number,
+  duration: number,
+  cleanUpFunction: () => void,
+) => {
   useEffect(() => {
     let bounce: any = null;
     if (rippleCount > 0) {
@@ -22,7 +28,11 @@ interface Props {
   children?: React.ReactNode;
 }
 
-const Ripple = ({ duration = 600, rippleColor = "hsl(var(--primary))", children }: Props) => {
+const Ripple = ({
+  duration = 600,
+  rippleColor = "hsl(var(--primary))",
+  children,
+}: Props) => {
   interface Ripple {
     y: number;
     x: number;
@@ -40,7 +50,9 @@ const Ripple = ({ duration = 600, rippleColor = "hsl(var(--primary))", children 
     const scrollX = window.pageXOffset;
     const scrollY = window.pageYOffset;
     const size =
-      rippleContainer.width > rippleContainer.height ? rippleContainer.width : rippleContainer.height;
+      rippleContainer.width > rippleContainer.height
+        ? rippleContainer.width
+        : rippleContainer.height;
     const x = event.pageX - rippleContainer.x - scrollX - size / 2;
     const y = event.pageY - rippleContainer.y - scrollY - size / 2;
     const newRipple = {
@@ -53,7 +65,10 @@ const Ripple = ({ duration = 600, rippleColor = "hsl(var(--primary))", children 
   };
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 top-0" onClick={addRipple}>
+    <span
+      className="absolute bottom-0 left-0 right-0 top-0"
+      onClick={addRipple}
+    >
       {children}
       {rippleArray.length > 0 &&
         rippleArray.map((ripple, i) => {
@@ -71,7 +86,7 @@ const Ripple = ({ duration = 600, rippleColor = "hsl(var(--primary))", children 
             />
           );
         })}
-    </div>
+    </span>
   );
 };
 

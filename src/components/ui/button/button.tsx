@@ -1,12 +1,10 @@
-// TODO: implement color variant
-
 import * as React from "react";
 import Link from "next/link";
 
 import Ripple from "./ripple";
 
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import { cn } from "~/lib/utils";
 
 const buttonVariants = cva(
   `inline-flex items-center justify-center rounded-md font-base
@@ -21,7 +19,8 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/80",
         secondary: "bg-secondary text-foreground hover:bg-secondary/80",
-        outline: "border border-ring text-foreground bg-background hover:bg-accent",
+        outline:
+          "border border-ring text-foreground bg-background hover:bg-accent",
         ghost: "text-foreground hover:bg-accent",
         link: "text-primary underline-offset-4 hover:underline",
       },
@@ -38,11 +37,12 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof buttonVariants> & {
+    isLoading?: boolean;
     /**
      * Color used for the button's ripple effect.
      */
@@ -54,20 +54,37 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
   };
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, children, rippleColor, href, ...props }, ref) => {
+  (
+    {
+      className,
+      isLoading = false,
+      variant,
+      size,
+      children,
+      rippleColor,
+      href,
+      ...props
+    },
+    ref,
+  ) => {
     const Component = href ? Link : "button";
     return (
       <Component
-        className={cn(buttonVariants({ variant, size, className }))}
+        disabled={isLoading}
+        className={cn(
+          buttonVariants({ variant, size, className }),
+          isLoading && "cursor-wait",
+        )}
         {...(href ? { href } : {})}
         // @ts-ignore
         ref={ref}
-        {...props}>
+        {...props}
+      >
         <Ripple rippleColor={rippleColor} />
         {children}
       </Component>
     );
-  }
+  },
 );
 
 Button.displayName = "Button";
