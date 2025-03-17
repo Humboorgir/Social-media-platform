@@ -6,6 +6,7 @@ import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import Toaster from "~/components/ui/toast";
+import Navbar from "./_components/navbar";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -22,7 +23,7 @@ export default function RootLayout({
     <html lang="en" className={`${roboto.className}`}>
       <body>
         <main className="grid min-h-screen grid-rows-[auto,1fr,auto]">
-          <header>test</header>
+          <Navbar />
           <TRPCReactProvider>{children}</TRPCReactProvider>
           <footer>test</footer>
         </main>

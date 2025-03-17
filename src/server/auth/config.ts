@@ -20,14 +20,6 @@ declare module "next-auth" {
   }
 }
 
-import { JWT } from "next-auth/jwt";
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    id: string;
-  }
-}
-
 class CustomError extends CredentialsSignin {
   constructor(error: string) {
     super();
@@ -67,7 +59,9 @@ export const authConfig = {
   callbacks: {
     session({ token, session }) {
       if (token) {
-        session.user.id = token.id;
+        session.user.id = token.id as string;
+        session.user.name = token.name as string;
+        session.user.email = token.email as string;
       }
 
       return session;
@@ -75,7 +69,9 @@ export const authConfig = {
     jwt({ token, user }) {
       if (!user) return token;
       return {
-        id: user.id as string,
+        name: user.name,
+        email: user.email,
+        id: user.id,
       };
     },
   },
