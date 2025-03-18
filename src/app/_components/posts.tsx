@@ -14,6 +14,7 @@ export default function Posts() {
       {posts.map((post, i) => {
         return (
           <Button
+            key={i}
             variant="ghost"
             href={`/post/${post.id}`}
             className="relative mb-3 flex max-w-[540px] flex-col rounded-md border p-3 [mask-image:linear-gradient(180deg,black_70%,transparent)]"
