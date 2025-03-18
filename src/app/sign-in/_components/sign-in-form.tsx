@@ -10,7 +10,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type SignInSchema, signInSchema } from "~/lib/schema/sign-in-schema";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { signIn } from "next-auth/react";
 
 export default function SignInForm() {

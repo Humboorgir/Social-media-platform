@@ -7,17 +7,13 @@ import {
 } from "~/components/ui/morphing-popover";
 import Button from "~/components/ui/button";
 import TextArea from "~/components/ui/textarea";
-import Input from "~/components/ui/input";
 
 import { motion } from "framer-motion";
-import {
-  createPostSchema,
-  type CreatePostSchema,
-} from "~/lib/schema/create-post-schema";
+import { createPostSchema } from "~/lib/schema/create-post-schema";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import React, { useCallback, useRef, useState } from "react";
+import { useRouter } from "nextjs-toploader/app";
+import React, { useRef } from "react";
 
 function Footer() {
   const router = useRouter();

@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { userSchema } from "~/lib/schema/user-schema";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 
 export default function SignUpForm() {
   const router = useRouter();
