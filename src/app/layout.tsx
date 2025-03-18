@@ -28,7 +28,7 @@ export default function RootLayout({
           <footer>test</footer>
         </main>
         <Toaster position="top-center" richColors />
-        <NextTopLoader color="black" />
+        <NextTopLoader color="black" shadow={false} />
       </body>
     </html>
   );
