@@ -1,4 +1,4 @@
-import { HydrateClient } from "~/trpc/server";
+import { api, HydrateClient } from "~/trpc/server";
 import Container from "~/components/ui/container";
 
 import PostInfo from "./_components/post-info";
@@ -12,6 +12,8 @@ type PostProps = {
 
 export default async function Post({ params }: PostProps) {
   const { id } = await params;
+
+  void api.post.getPost.prefetch({ id });
   return (
     <HydrateClient>
       <Container className="flex w-full flex-col items-center py-8">

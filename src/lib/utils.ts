@@ -1,10 +1,16 @@
 import { twMerge } from "tailwind-merge";
 import { ClassValue, clsx } from "clsx";
+import { pfpUrlBase } from "~/config";
 
 export function cn(...classes: ClassValue[]) {
   return twMerge(clsx(classes));
 }
 
+export function getPfpUrl(id: string | number) {
+  const pfpUrl = new URL(pfpUrlBase);
+  pfpUrl.searchParams.set("seed", String(id));
+  return pfpUrl.toString();
+}
 // used to get relative time from date (eg. 'x days ago')
 export function formatDateRelatively(date: string | Date) {
   const timeStamp = new Date(date);

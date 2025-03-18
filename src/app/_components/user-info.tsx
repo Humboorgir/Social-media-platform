@@ -3,8 +3,10 @@
 import type { Session } from "next-auth";
 
 import { signOut } from "next-auth/react";
+import Image from "next/image";
 import Button from "~/components/ui/button";
 import Dropdown from "~/components/ui/dropdown";
+import { getPfpUrl } from "~/lib/utils";
 
 type UserInfoProps = {
   user?: Session["user"];
@@ -25,7 +27,14 @@ export default function UserInfo({ user }: UserInfoProps) {
           },
         ]}
       >
-        {user?.name}
+        <Image
+          className=""
+          width={30}
+          height={30}
+          src={getPfpUrl(user!.id)}
+          alt={`${user!.name} profile picture`}
+        />
+        {user!.name}
       </Dropdown>
     );
 

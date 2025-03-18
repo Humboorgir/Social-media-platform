@@ -14,14 +14,14 @@ export const commentRouter = createTRPCRouter({
     .input(createCommentSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        const post = await ctx.db.comment.create({
+        const comment = await ctx.db.comment.create({
           data: {
             content: input.content,
             post: { connect: { id: Number(input.postId) } },
             author: { connect: { id: ctx.session.user.id } },
           },
         });
-        return post;
+        return comment;
       } catch (e) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

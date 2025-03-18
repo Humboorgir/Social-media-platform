@@ -30,10 +30,28 @@ export const postRouter = createTRPCRouter({
   getLatestPosts: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.db.post.findMany({
       orderBy: { createdAt: "desc" },
-      include: { author: true },
+      include: {
+        author: true,
+        likedBy: {
+          select: { id: true },
+        },
+        comments: {
+          select: { id: true },
+        },
+      },
     });
 
-    return posts;
+    const postsWithIsLike = posts.map((post) => {
+      if (!ctx.session) return post;
+      const isPostLiked = post.likedBy.find(
+        (user) => user.id == ctx.session?.user.id,
+      );
+      if (!isPostLiked) return post;
+
+      return { ...post, isLiked: true };
+    });
+
+    return postsWithIsLike;
   }),
   getOwnPosts: protectedProcedure.query(async ({ ctx }) => {
     const posts = await ctx.db.post.findMany({
@@ -41,22 +59,90 @@ export const postRouter = createTRPCRouter({
       where: {
         authorId: ctx.session.user.id,
       },
-      include: { author: true },
+      include: {
+        author: true,
+        likedBy: {
+          select: { id: true },
+        },
+        comments: {
+          select: { id: true },
+        },
+      },
     });
 
-    return posts;
+    const postsWithIsLike = posts.map((post) => {
+      if (!ctx.session) return post;
+      const isPostLiked = post.likedBy.find(
+        (user) => user.id == ctx.session?.user.id,
+      );
+      if (!isPostLiked) return post;
+
+      return { ...post, isLiked: true };
+    });
+
+    return postsWithIsLike;
   }),
   getPost: publicProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: z.union([z.number(), z.string()]) }))
     .query(async ({ input, ctx }) => {
       const post = await ctx.db.post.findFirst({
         where: {
-          id: input.id,
+          id: Number(input.id),
         },
-        include: { author: true },
+        include: {
+          author: true,
+          comments: true,
+          likedBy: { select: { id: true } },
+        },
+      });
+      if (!post)
+        throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
+
+      if (!ctx.session) return post;
+      const isPostLiked = post.likedBy.find(
+        (user) => user.id == ctx.session?.user.id,
+      );
+      if (!isPostLiked) return post;
+
+      return { ...post, isLiked: true };
+    }),
+  toggleLike: protectedProcedure
+    .input(z.object({ postId: z.union([z.number(), z.string()]) }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+
+      // Check if the post exists and if the user has already liked it
+      const post = await ctx.db.post.findFirst({
+        where: { id: Number(input.postId) },
+        select: {
+          id: true,
+          likedBy: {
+            where: { id: userId },
+            select: { id: true },
+          },
+        },
       });
 
-      return post;
+      if (!post) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post not found",
+        });
+      }
+
+      const isLiked = post.likedBy.find((user) => user.id === userId);
+
+      // Toggle the like: connect if not liked, disconnect if liked
+      await ctx.db.post.update({
+        where: { id: Number(input.postId) },
+        data: {
+          likedBy: isLiked
+            ? { disconnect: { id: userId } }
+            : { connect: { id: userId } },
+        },
+      });
+
+      return { ok: true, isLiked: !isLiked };
     }),
   // getLatest: protectedProcedure.query(async ({ ctx }) => {
   //   const post = await ctx.db.post.findFirst({

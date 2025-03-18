@@ -50,6 +50,7 @@ export default function PostComment({ postId }: PostCommentProps) {
   return (
     <form className="mb-4 flex flex-col items-end" onSubmit={handleSubmit}>
       <TextArea
+        id="postComment-textarea"
         name="comment-content"
         ref={contentRef}
         className="mb-1 w-full"

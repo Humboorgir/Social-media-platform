@@ -1,15 +1,14 @@
 import Container from "~/components/ui/container";
 import Text from "~/components/ui/text";
 import { auth } from "~/server/auth";
-import { HydrateClient } from "~/trpc/server";
+import { api, HydrateClient } from "~/trpc/server";
 import Footer from "./footer";
 import Posts from "./posts";
 
 export default async function PageContent() {
   const session = await auth();
-  //   if (session?.user) {
-  //     void api.post.getLatest.prefetch();
-  //   }
+
+  void api.post.getLatestPosts.prefetch();
 
   return (
     <HydrateClient>
