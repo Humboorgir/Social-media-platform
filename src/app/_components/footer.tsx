@@ -51,6 +51,7 @@ function Footer() {
     });
   };
 
+  const MButton = motion.create(Button);
   return (
     <form
       onSubmit={handleSubmit}
@@ -59,23 +60,27 @@ function Footer() {
       <MorphingPopover>
         <MorphingPopoverTrigger asChild>
           <Button className="fixed bottom-[20px]" variant="outline">
-            <motion.span
-              layoutId="morphing-popover-basic-label"
-              layout="position"
-            >
+            <motion.span layoutId="popover-label" layout="position">
               Create your own post
             </motion.span>
           </Button>
         </MorphingPopoverTrigger>
         <MorphingPopoverContent className="flex w-[min(800px,95vw)] flex-col items-end">
           <TextArea
+            name="post-content"
             ref={contentRef}
             rows={6}
             className="mb-3 w-full"
             placeholder="Write something here..."
           />
 
-          <Button isLoading={isPending}>Post</Button>
+          <MButton
+            layoutId="popover-label"
+            layout="position"
+            isLoading={isPending}
+          >
+            Post
+          </MButton>
         </MorphingPopoverContent>
       </MorphingPopover>
     </form>
