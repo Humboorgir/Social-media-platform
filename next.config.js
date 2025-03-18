@@ -5,6 +5,11 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  images: {
+    dangerouslyAllowSVG: true,
+    domains: ["api.dicebear.com"],
+  },
+};
 
 export default config;

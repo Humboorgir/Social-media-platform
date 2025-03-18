@@ -13,7 +13,7 @@ export default async function PageContent() {
 
   return (
     <HydrateClient>
-      <Container className="flex flex-col items-center py-8">
+      <Container className="flex flex-col items-center py-8 text-center">
         <Text className="md:text-4xl" variant="h2">
           Welcome back {session?.user.name}!
         </Text>

@@ -1,6 +1,8 @@
 import { HydrateClient } from "~/trpc/server";
-import PostInfo from "./_components/postInfo";
 import Container from "~/components/ui/container";
+
+import PostInfo from "./_components/post-info";
+import CommentsSection from "./_components/comments-section";
 
 type PostProps = {
   params: {
@@ -14,6 +16,7 @@ export default async function Post({ params }: PostProps) {
     <HydrateClient>
       <Container className="flex w-full flex-col items-center py-8">
         <PostInfo id={id} />
+        <CommentsSection id={id} />
       </Container>
     </HydrateClient>
   );

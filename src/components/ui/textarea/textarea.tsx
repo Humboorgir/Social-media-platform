@@ -14,7 +14,7 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
           ref={ref}
           {...props}
         />
-        <label className="pointer-events-none absolute left-[8px] top-0 z-10 -translate-y-1/2 bg-background px-1 text-xs text-foreground transition-all peer-placeholder-shown:left-[13px] peer-placeholder-shown:top-[20px] peer-placeholder-shown:text-base peer-focus:!left-[8px] peer-focus:!top-0 peer-focus:!text-xs peer-focus:text-primary">
+        <label className="pointer-events-none absolute left-[8px] top-0 z-10 -translate-y-1/2 bg-background px-1 text-xs text-foreground-muted transition-all peer-placeholder-shown:left-[13px] peer-placeholder-shown:top-[20px] peer-placeholder-shown:text-base peer-focus:!left-[8px] peer-focus:!top-0 peer-focus:!text-xs peer-focus:text-primary">
           {placeholder}
         </label>
       </div>
