@@ -6,10 +6,10 @@ import Text from "~/components/ui/text";
 import Button from "~/components/ui/button";
 import Image from "next/image";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "nextjs-toploader/app";
 import { cn, formatDateRelatively, getPfpUrl } from "~/lib/utils";
 import { api } from "~/trpc/react";
+import { useRouter } from "nextjs-toploader/app";
+import { useLikes } from "~/hooks/useLikes";
 
 import { MessageCircle, Heart } from "lucide-react";
 
@@ -23,16 +23,9 @@ type PostProps = {
 };
 
 export default function Post({ post }: PostProps) {
-  const postLikeCount = post.likedBy.length;
-  const isPostLiked = post.isLiked;
   const router = useRouter();
-  const [isLiked, setIsLiked] = useState(isPostLiked);
-  const [likeCount, setLikeCount] = useState(postLikeCount);
 
-  useEffect(() => {
-    setIsLiked(isPostLiked);
-    setLikeCount(postLikeCount);
-  }, [isPostLiked, postLikeCount]);
+  const { isLiked, setIsLiked, likeCount, setLikeCount } = useLikes(post);
 
   function comment() {
     router.push(`/post/${post.id}`);

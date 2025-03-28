@@ -10,6 +10,7 @@ import Image from "next/image";
 import { ArrowLeft, MessageCircle, Heart } from "lucide-react";
 import Button from "~/components/ui/button";
 import { useEffect, useState } from "react";
+import { useLikes } from "~/hooks/useLikes";
 
 type PostInfoProps = {
   id: number;
@@ -22,15 +23,7 @@ export default function PostInfo({ id }: PostInfoProps) {
 
   if (!post) return notFound();
 
-  const postLikeCount = post.likedBy.length;
-  const isPostLiked = post.isLiked;
-  const [isLiked, setIsLiked] = useState(isPostLiked);
-  const [likeCount, setLikeCount] = useState(postLikeCount);
-
-  useEffect(() => {
-    setIsLiked(isPostLiked);
-    setLikeCount(postLikeCount);
-  }, [isPostLiked, postLikeCount]);
+  const { isLiked, setIsLiked, likeCount, setLikeCount } = useLikes(post);
 
   function comment() {
     const postCommentTextArea = document.getElementById("postComment-textarea");
