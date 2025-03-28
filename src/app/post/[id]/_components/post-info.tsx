@@ -3,13 +3,13 @@
 import { notFound } from "next/navigation";
 import Text from "~/components/ui/text";
 import { pfpUrlBase } from "~/config";
-import { cn, formatDateRelatively } from "~/lib/utils";
+import { cn, formatDateRelatively, getPfpUrl } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import Image from "next/image";
 
 import { ArrowLeft, MessageCircle, Heart } from "lucide-react";
 import Button from "~/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type PostInfoProps = {
   id: number;
@@ -22,12 +22,15 @@ export default function PostInfo({ id }: PostInfoProps) {
 
   if (!post) return notFound();
 
-  // @ts-ignore
-  const [isLiked, setIsLiked] = useState(post.isLiked ? true : false);
-  const [likeCount, setLikeCount] = useState(post.likedBy.length);
+  const postLikeCount = post.likedBy.length;
+  const isPostLiked = post.isLiked;
+  const [isLiked, setIsLiked] = useState(isPostLiked);
+  const [likeCount, setLikeCount] = useState(postLikeCount);
 
-  const pfpUrl = new URL(pfpUrlBase);
-  pfpUrl.searchParams.set("seed", post.author.id);
+  useEffect(() => {
+    setIsLiked(isPostLiked);
+    setLikeCount(postLikeCount);
+  }, [isPostLiked, postLikeCount]);
 
   function comment() {
     const postCommentTextArea = document.getElementById("postComment-textarea");
@@ -56,7 +59,7 @@ export default function PostInfo({ id }: PostInfoProps) {
       <div className="mb-2 flex w-full items-center">
         <Image
           className="mr-2 rounded-full bg-primary/10"
-          src={pfpUrl.toString()}
+          src={getPfpUrl(post.author.id)}
           height={45}
           width={45}
           alt={`${post.author.name} profile picture`}

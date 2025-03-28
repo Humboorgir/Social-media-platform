@@ -14,6 +14,7 @@ export default async function Post({ params }: PostProps) {
   const { id } = await params;
 
   void api.post.getPost.prefetch({ id });
+
   return (
     <HydrateClient>
       <Container className="flex w-full flex-col items-center py-8">

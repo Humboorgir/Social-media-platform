@@ -42,13 +42,11 @@ export const postRouter = createTRPCRouter({
     });
 
     const postsWithIsLike = posts.map((post) => {
-      if (!ctx.session) return post;
-      const isPostLiked = post.likedBy.find(
-        (user) => user.id == ctx.session?.user.id,
-      );
-      if (!isPostLiked) return post;
+      const isLiked = ctx.session
+        ? post.likedBy.some((user) => user.id === ctx.session?.user.id)
+        : false;
 
-      return { ...post, isLiked: true };
+      return Object.assign(post, { isLiked });
     });
 
     return postsWithIsLike;
@@ -71,13 +69,11 @@ export const postRouter = createTRPCRouter({
     });
 
     const postsWithIsLike = posts.map((post) => {
-      if (!ctx.session) return post;
-      const isPostLiked = post.likedBy.find(
-        (user) => user.id == ctx.session?.user.id,
-      );
-      if (!isPostLiked) return post;
+      const isLiked = ctx.session
+        ? post.likedBy.some((user) => user.id === ctx.session?.user.id)
+        : false;
 
-      return { ...post, isLiked: true };
+      return Object.assign(post, { isLiked });
     });
 
     return postsWithIsLike;
@@ -98,13 +94,11 @@ export const postRouter = createTRPCRouter({
       if (!post)
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found" });
 
-      if (!ctx.session) return post;
-      const isPostLiked = post.likedBy.find(
-        (user) => user.id == ctx.session?.user.id,
-      );
-      if (!isPostLiked) return post;
+      const isLiked = ctx.session
+        ? post.likedBy.some((user) => user.id === ctx.session?.user.id)
+        : false;
 
-      return { ...post, isLiked: true };
+      return Object.assign(post, { isLiked });
     }),
   toggleLike: protectedProcedure
     .input(z.object({ postId: z.union([z.number(), z.string()]) }))
@@ -144,14 +138,4 @@ export const postRouter = createTRPCRouter({
 
       return { ok: true, isLiked: !isLiked };
     }),
-  // getLatest: protectedProcedure.query(async ({ ctx }) => {
-  //   const post = await ctx.db.post.findFirst({
-  //     orderBy: { createdAt: "desc" },
-  //     where: { createdBy: { id: ctx.session.user.id } },
-  //   });
-  //   return post ?? null;
-  // }),
-  // getSecretMessage: protectedProcedure.query(() => {
-  //   return "you can now see this secret message!";
-  // }),
 });

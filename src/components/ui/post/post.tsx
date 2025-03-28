@@ -1,29 +1,38 @@
 "use client";
 
+import type { Post, User } from "@prisma/client";
+
 import Text from "~/components/ui/text";
-import { cn, formatDateRelatively, getPfpUrl } from "~/lib/utils";
-import { api } from "~/trpc/react";
+import Button from "~/components/ui/button";
 import Image from "next/image";
 
-import { MessageCircle, Heart } from "lucide-react";
-import Button from "~/components/ui/button";
 import { useEffect, useState } from "react";
-import type { Post, User } from "@prisma/client";
 import { useRouter } from "nextjs-toploader/app";
+import { cn, formatDateRelatively, getPfpUrl } from "~/lib/utils";
+import { api } from "~/trpc/react";
+
+import { MessageCircle, Heart } from "lucide-react";
 
 type PostProps = {
   post: Post & {
     author: User;
     comments: { id: number | string }[];
     likedBy: { id: number | string }[];
-    isLiked?: boolean;
+    isLiked: boolean;
   };
 };
 
 export default function Post({ post }: PostProps) {
-  const [isLiked, setIsLiked] = useState(post.isLiked ? true : false);
+  const postLikeCount = post.likedBy.length;
+  const isPostLiked = post.isLiked;
   const router = useRouter();
-  const [likeCount, setLikeCount] = useState(post.likedBy.length);
+  const [isLiked, setIsLiked] = useState(isPostLiked);
+  const [likeCount, setLikeCount] = useState(postLikeCount);
+
+  useEffect(() => {
+    setIsLiked(isPostLiked);
+    setLikeCount(postLikeCount);
+  }, [isPostLiked, postLikeCount]);
 
   function comment() {
     router.push(`/post/${post.id}`);
@@ -32,6 +41,7 @@ export default function Post({ post }: PostProps) {
   const { mutateAsync, isPending } = api.post.toggleLike.useMutation();
   async function likePost() {
     const { isLiked } = await mutateAsync({ postId: post.id });
+
     setIsLiked(isLiked);
     setLikeCount((prev) => {
       if (isLiked) return prev + 1;
