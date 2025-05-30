@@ -8,7 +8,7 @@ import Posts from "./posts";
 export default async function PageContent() {
   const session = await auth();
 
-  void api.post.getLatestPosts.prefetch();
+  void api.post.getLatestPosts.prefetch({});
 
   return (
     <HydrateClient>

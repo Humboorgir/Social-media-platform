@@ -27,30 +27,47 @@ export const postRouter = createTRPCRouter({
         });
       }
     }),
-  getLatestPosts: publicProcedure.query(async ({ ctx }) => {
-    const posts = await ctx.db.post.findMany({
-      orderBy: { createdAt: "desc" },
-      include: {
-        author: true,
-        likedBy: {
-          select: { id: true },
+  getLatestPosts: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).default(5),
+        cursor: z.number().nullish(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { cursor, limit } = input;
+
+      const posts = await ctx.db.post.findMany({
+        take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: { createdAt: "desc" },
+        include: {
+          author: true,
+          likedBy: {
+            select: { id: true },
+          },
+          comments: {
+            select: { id: true },
+          },
         },
-        comments: {
-          select: { id: true },
-        },
-      },
-    });
+      });
 
-    const postsWithIsLike = posts.map((post) => {
-      const isLiked = ctx.session
-        ? post.likedBy.some((user) => user.id === ctx.session?.user.id)
-        : false;
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (posts.length > limit) {
+        const nextItem = posts.pop();
+        nextCursor = nextItem!.id;
+      }
 
-      return Object.assign(post, { isLiked });
-    });
+      const postsWithIsLiked = posts.map((post) => {
+        const isLiked = ctx.session
+          ? post.likedBy.some((user) => user.id === ctx.session?.user.id)
+          : false;
 
-    return postsWithIsLike;
-  }),
+        return Object.assign(post, { isLiked });
+      });
+
+      return { posts: postsWithIsLiked, nextCursor };
+    }),
   getOwnPosts: protectedProcedure.query(async ({ ctx }) => {
     const posts = await ctx.db.post.findMany({
       orderBy: { createdAt: "desc" },

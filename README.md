@@ -11,4 +11,4 @@ TODO:
 
 - handle loading states
 - make user profiles openable
-- implement infinite scrolling
+- ~~implement infinite scrolling~~ (Implemented for "Latest posts")
